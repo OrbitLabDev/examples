@@ -1,10 +1,10 @@
-# PHP + WordPress on LiteSpeed
+# PHP + WordPress on OpenLiteSpeed
 
-Orbit Lab example: **WordPress** on **LiteSpeed** (litespeedtech/litespeed). WordPress is installed in the image; `wp-config.php` is generated at startup from `MYSQL_*` env vars. The database is **OrbitLab shared MySQL** (provisioned via API); no DB container.
+Orbit Lab example: **WordPress** on **OpenLiteSpeed** (litespeedtech/openlitespeed). Open-source, no license key. WordPress is installed in the image; `wp-config.php` is generated at startup from `MYSQL_*` env vars. The database is **OrbitLab shared MySQL** (provisioned via API); no DB container.
 
 ## Contents
 
-- `Dockerfile` – LiteSpeed image + WordPress install
+- `Dockerfile` – OpenLiteSpeed image + WordPress install
 - `docker-entrypoint.sh` – generates `wp-config.php` from env
 - `docker-compose.litespeed.yml` – app only (set `MYSQL_*` in .env from OrbitLab or external MySQL)
 - `.env.example` – copy to `.env` and set `MYSQL_*`
@@ -20,8 +20,9 @@ cp .env.example .env
 docker compose -f docker-compose.litespeed.yml up -d
 ```
 
-- HTTP: port `7080` (or `HTTP_PORT`, default 8080)
-- HTTPS: port `7443` (or `HTTPS_PORT`, default 8443). Open the site and complete the WordPress setup wizard in the browser.
+- HTTP: port `80` (or `HTTP_PORT`, default 8080)
+- HTTPS: port `443` (or `HTTPS_PORT`, default 8443). Open the site and complete the WordPress setup wizard in the browser.
+- WebAdmin: port `7080` (optional)
 
 ## OrbitLab PaaS
 

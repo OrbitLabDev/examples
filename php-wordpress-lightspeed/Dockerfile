@@ -1,7 +1,7 @@
-# Orbit Lab — PHP (LiteSpeed) + WordPress
-# WordPress is installed in the image; wp-config.php is generated at startup from env.
+# Orbit Lab — PHP (OpenLiteSpeed) + WordPress
+# Open-source LiteSpeed; no license key required. WordPress in image; wp-config.php generated at startup from env.
 
-FROM litespeedtech/litespeed:latest
+FROM litespeedtech/openlitespeed:latest
 
 # Install curl for downloading WordPress
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -25,4 +25,4 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["/usr/local/lsws/bin/lswsctrl", "start"]
 
-EXPOSE 7080 7443
+EXPOSE 7080 80 443

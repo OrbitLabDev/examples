@@ -1,27 +1,26 @@
-# Orbit Lab — PHP (LiteSpeed) + WordPress (app only; DB from OrbitLab shared MySQL)
+# Orbit Lab — PHP (OpenLiteSpeed) + WordPress (app only; DB from OrbitLab shared MySQL)
 # Use: docker compose -f docker-compose.litespeed.yml up -d
 # Set MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_USER, MYSQL_PASSWORD in .env (from POST /database or external MySQL). See .env.example.
 
 services:
-  litespeed:
+  openlitespeed:
     build: .
-    image: orbitlab-wordpress-litespeed
+    image: orbitlab-wordpress-openlitespeed
     restart: unless-stopped
     environment:
-      LSWS_VERSION: ${LSWS_VERSION:-latest}
-      PHP_VERSION: ${PHP_VERSION:-83}
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_PORT: ${MYSQL_PORT:-3306}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - lsws_sites:/usr/local/lsws/sites
-      - lsws_logs:/usr/local/lsws/logs
+      - ols_sites:/usr/local/lsws/sites
+      - ols_logs:/usr/local/lsws/logs
     ports:
-      - "${HTTP_PORT:-8080}:7080"
-      - "${HTTPS_PORT:-8443}:7443"
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
+      - "${WEBADMIN_PORT:-7080}:7080"
 
 volumes:
-  lsws_sites:
-  lsws_logs:
+  ols_sites:
+  ols_logs:
