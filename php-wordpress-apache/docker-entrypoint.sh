@@ -24,7 +24,18 @@ fi
 
 # Generate wp-config.php from env (MYSQL_* from compose or from OrbitLab PaaS project env)
 if [ ! -f "${DOCROOT}/wp-config.php" ]; then
-  WP_KEY=$(curl -sSL https://api.wordpress.org/secret-key/1.1/salt/)
+  # Fetch WordPress salts; in PaaS (isolated network) DNS may be unavailable, so fall back to placeholders
+  WP_KEY=$(curl -sSL --connect-timeout 5 https://api.wordpress.org/secret-key/1.1/salt/ 2>/dev/null) || true
+  if [ -z "$WP_KEY" ]; then
+    WP_KEY="define('AUTH_KEY',         '$(openssl rand -base64 24)');
+define('SECURE_AUTH_KEY',  '$(openssl rand -base64 24)');
+define('LOGGED_IN_KEY',    '$(openssl rand -base64 24)');
+define('NONCE_KEY',        '$(openssl rand -base64 24)');
+define('AUTH_SALT',        '$(openssl rand -base64 24)');
+define('SECURE_AUTH_SALT', '$(openssl rand -base64 24)');
+define('LOGGED_IN_SALT',   '$(openssl rand -base64 24)');
+define('NONCE_SALT',       '$(openssl rand -base64 24)');"
+  fi
   cat > "${DOCROOT}/wp-config.php" << EOF
 <?php
 define('DB_NAME', '${MYSQL_DATABASE:-wordpress}');
