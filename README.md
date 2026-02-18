@@ -1,6 +1,6 @@
 # OrbitLab examples
 
-Deployable examples for [OrbitLab.dev](https://orbitlab.dev). Each example can run **locally** with its own DB (docker-compose) or on **OrbitLab PaaS** using the **shared database** (no DB container; env from `POST /database`).
+Deployable examples for [OrbitLab.dev](https://orbitlab.dev). Each example runs **PHP only** in Docker; the database is **OrbitLab shared MySQL** (provisioned via `POST /database`). You can run locally with the same compose (set `MYSQL_*` in .env from the API or external MySQL).
 
 ## Examples
 
@@ -17,4 +17,4 @@ On the PaaS you do **not** run a database inside Docker. Instead:
 2. **Set project env** with `PUT /project/:id/env` using those fields (e.g. `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`).
 3. **Deploy** the app image only. The container receives the env and connects to the shared MySQL.
 
-See each example’s README for step-by-step and for app-only compose files (to run locally against the shared DB).
+See each example’s README for step-by-step and for local run with the shared DB env.
