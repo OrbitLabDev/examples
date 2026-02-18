@@ -12,9 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV DOCUMENT_ROOT=/var/www/vhosts/localhost/html
 WORKDIR /var/www/vhosts
 
-# Download and install WordPress
+# Download and install WordPress (remove base image's html so WordPress ends up at html/, not html/wordpress/)
 ARG WORDPRESS_VERSION=6.7.2
-RUN curl -sSL "https://wordpress.org/wordpress-${WORDPRESS_VERSION}.tar.gz" | tar -xzf - -C /tmp \
+RUN rm -rf localhost/html \
+    && curl -sSL "https://wordpress.org/wordpress-${WORDPRESS_VERSION}.tar.gz" | tar -xzf - -C /tmp \
     && mv /tmp/wordpress localhost/html \
     && chown -R nobody:nogroup localhost/html
 

@@ -24,9 +24,10 @@ RUN a2enmod rewrite
 ENV APACHE_DOCUMENT_ROOT=/var/www/html
 WORKDIR /var/www/html
 
-# Download and install WordPress
+# Download and install WordPress (clear default docroot so WordPress is the only content)
 ARG WORDPRESS_VERSION=6.7.2
-RUN curl -sSL "https://wordpress.org/wordpress-${WORDPRESS_VERSION}.tar.gz" | tar -xzf - -C /var/www \
+RUN find /var/www/html -mindepth 1 -delete 2>/dev/null || true \
+    && curl -sSL "https://wordpress.org/wordpress-${WORDPRESS_VERSION}.tar.gz" | tar -xzf - -C /var/www \
     && mv /var/www/wordpress/* /var/www/html/ \
     && rmdir /var/www/wordpress \
     && chown -R www-data:www-data /var/www/html
