@@ -1,0 +1,39 @@
+# Orbit Lab — PHP (Apache) + WordPress + 1 DB
+# Use: docker compose -f docker-compose.apache.yml up -d
+# Requires .env with MYSQL_* (see .env.example).
+
+services:
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress}
+      MYSQL_USER: ${MYSQL_USER:-wpuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wppass}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  apache:
+    build: .
+    image: orbitlab-wordpress-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress}
+      MYSQL_USER: ${MYSQL_USER:-wpuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wppass}
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+
+volumes:
+  db_data:

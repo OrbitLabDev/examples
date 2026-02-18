@@ -1,18 +1,22 @@
 # PHP + WordPress on Apache
 
-Example stack for deploying WordPress on **Apache** with PHP (mod_php or PHP-FPM).
-
-Suitable for deployment on [OrbitLab.dev](https://orbitlab.dev).
+Orbit Lab example: **WordPress** on **Apache** (PHP 8.2) with **MariaDB**. WordPress is installed in the image; `wp-config.php` is generated at startup from `MYSQL_*` env vars.
 
 ## Contents
 
-- `Dockerfile` – PHP with Apache for WordPress.
+- `Dockerfile` – PHP Apache image + WordPress install
+- `docker-entrypoint.sh` – generates `wp-config.php` from env
+- `docker-compose.apache.yml` – db + apache services
+- `.env.example` – copy to `.env` and set `MYSQL_*`
 
 ## Usage
 
-Build and run with Docker, or use this folder as the app source for OrbitLab.dev deployment.
+```bash
+cp .env.example .env
+# Edit .env and set MYSQL_ROOT_PASSWORD, MYSQL_PASSWORD, etc.
+docker compose -f docker-compose.apache.yml up -d
+```
 
-## Notes
+- HTTP: port 80 in container (mapped to `HTTP_PORT` from `.env`, default 8080)
 
-- WordPress core can be installed at deploy time or baked into the image.
-- Configure database and `WP_*` env vars for your deployment.
+Then open the site and complete the WordPress setup wizard in the browser.

@@ -1,0 +1,47 @@
+# Orbit Lab — PHP (LiteSpeed) + WordPress + 1 DB
+# Use: docker compose -f docker-compose.litespeed.yml up -d
+# Requires .env with MYSQL_* and optional LSWS_* (see .env.example).
+
+services:
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress}
+      MYSQL_USER: ${MYSQL_USER:-wpuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wppass}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  litespeed:
+    build: .
+    image: orbitlab-wordpress-litespeed
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      LSWS_VERSION: ${LSWS_VERSION:-latest}
+      PHP_VERSION: ${PHP_VERSION:-83}
+      MYSQL_HOST: db
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-wordpress}
+      MYSQL_USER: ${MYSQL_USER:-wpuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wppass}
+    volumes:
+      - lsws_sites:/usr/local/lsws/sites
+      - lsws_logs:/usr/local/lsws/logs
+    ports:
+      - "${HTTP_PORT:-8080}:7080"
+      - "${HTTPS_PORT:-8443}:7443"
+
+volumes:
+  db_data:
+  lsws_sites:
+  lsws_logs:
