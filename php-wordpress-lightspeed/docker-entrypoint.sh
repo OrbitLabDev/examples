@@ -23,17 +23,10 @@ fi
 
 # Generate wp-config.php from env (MYSQL_* from compose or from OrbitLab PaaS project env)
 if [ ! -f "${DOCROOT}/wp-config.php" ]; then
-  # Fetch WordPress salts; in PaaS (isolated network) DNS may be unavailable, so fall back to placeholders
-  WP_KEY=$(curl -sSL --connect-timeout 5 https://api.wordpress.org/secret-key/1.1/salt/ 2>/dev/null) || true
-  if [ -z "$WP_KEY" ]; then
-    WP_KEY="define('AUTH_KEY',         '$(openssl rand -base64 24)');
-define('SECURE_AUTH_KEY',  '$(openssl rand -base64 24)');
-define('LOGGED_IN_KEY',    '$(openssl rand -base64 24)');
-define('NONCE_KEY',        '$(openssl rand -base64 24)');
-define('AUTH_SALT',        '$(openssl rand -base64 24)');
-define('SECURE_AUTH_SALT', '$(openssl rand -base64 24)');
-define('LOGGED_IN_SALT',   '$(openssl rand -base64 24)');
-define('NONCE_SALT',       '$(openssl rand -base64 24)');"
+  # WordPress salts: must be set via env (WP_SALTS = full block of define('AUTH_KEY',...); lines)
+  if [ -z "${WP_SALTS:-}" ]; then
+    echo "Error: set WP_SALTS (full block of define('AUTH_KEY', ...); lines from api.wordpress.org/secret-key/1.1/salt/ or wp-config.php)" >&2
+    exit 1
   fi
   cat > "${DOCROOT}/wp-config.php" << EOF
 <?php
@@ -44,7 +37,7 @@ define('DB_HOST', '${MYSQL_HOST:-db}:${MYSQL_PORT:-3306}');
 define('DB_CHARSET', 'utf8mb4');
 define('DB_COLLATE', '');
 \$table_prefix = 'wp_';
-${WP_KEY}
+${WP_SALTS}
 define('WP_DEBUG', false);
 if ( ! defined( 'ABSPATH' ) ) { define( 'ABSPATH', __DIR__ . '/' ); }
 require_once ABSPATH . 'wp-settings.php';
