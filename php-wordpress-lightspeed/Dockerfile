@@ -3,14 +3,21 @@
 
 FROM litespeedtech/openlitespeed:latest
 
-# Install curl for downloading WordPress
+# Install deps for downloading WordPress + running WP-CLI
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
+    php-cli \
+    php-mysql \
     && rm -rf /var/lib/apt/lists/*
 
 ENV DOCUMENT_ROOT=/var/www/vhosts/localhost/html
 WORKDIR /var/www/vhosts
+
+# Install WP-CLI (used by the platform for managed operations)
+RUN curl -fsSL -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x /usr/local/bin/wp \
+    && wp --info --allow-root
 
 # Download and install WordPress (remove base image's html so WordPress ends up at html/, not html/wordpress/)
 ARG WORDPRESS_VERSION=6.7.2

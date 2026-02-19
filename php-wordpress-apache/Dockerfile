@@ -18,6 +18,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     mysqli pdo pdo_mysql zip gd mbstring exif intl opcache \
     && rm -rf /var/lib/apt/lists/*
 
+# Install WP-CLI (used by the platform for managed operations)
+RUN curl -fsSL -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x /usr/local/bin/wp \
+    && wp --info --allow-root
+
 # Enable Apache rewrite for WordPress permalinks
 RUN a2enmod rewrite
 
