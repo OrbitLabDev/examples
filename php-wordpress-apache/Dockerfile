@@ -1,13 +1,16 @@
 # Orbit Lab — PHP (Apache) + WordPress
 # WordPress is installed in the image; wp-config.php is generated at startup from env.
 
-FROM php:8.2-apache
+FROM php:8.2-apache-bookworm
 
 # Install system deps and PHP extensions for WordPress
+# zlib1g-dev required for gd; libjpeg62-turbo-dev is the Debian package for JPEG support
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
+    zlib1g-dev \
     libpng-dev \
-    libjpeg-dev \
+    libjpeg62-turbo-dev \
     libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
