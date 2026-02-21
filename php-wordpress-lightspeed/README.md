@@ -5,7 +5,7 @@ Orbit Lab example: **WordPress** on **OpenLiteSpeed** (litespeedtech/openlitespe
 ## Contents
 
 - `Dockerfile` – OpenLiteSpeed image + WordPress install
-- `docker-entrypoint.sh` – generates `wp-config.php` from env
+- `docker-entrypoint.sh` – generates `wp-config.php` from env; enables OpenLiteSpeed rewrite and .htaccess so WordPress pretty permalinks work
 - `docker-compose.litespeed.yml` – app only (set `MYSQL_*` in .env from OrbitLab or external MySQL)
 - `.env.example` – copy to `.env` and set `MYSQL_*`
 
@@ -27,13 +27,6 @@ docker compose -f docker-compose.litespeed.yml up -d
 
 ## OrbitLab PaaS
 
-On OrbitLab you deploy **only the app image**; the database is provisioned via the API and injected as project env.
-
 1. Create a project and (if needed) a domain.
-2. Provision a MySQL database: `POST /database` with `{ "userId", "type": "mysql" }`. The API returns `host`, `port`, `database`, `user`, `password` (and `connectionString`).
-3. Set project env from the response: `PUT /project/:id/env` with:
-   - `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`
-4. Set **`WP_SALTS`** to the full block of `define('AUTH_KEY', ...);` lines (from [api.wordpress.org/secret-key/1.1/salt/](https://api.wordpress.org/secret-key/1.1/salt/) or from an existing `wp-config.php`).
-5. Deploy the app. The container receives the env and connects to the shared MySQL.
-
-The PaaS mounts a persistent volume at **`/app/data`** in the container. The entrypoint uses it for WordPress **uploads**, **plugins**, and **themes** (symlinks `wp-content/uploads`, `wp-content/plugins`, `wp-content/themes` → `/app/data/...`) so media and user-installed plugins/themes persist across deploys. If `/app/data` is not present (e.g. local compose), WordPress uses the default wp-content dirs.
+2. Provision MySQL: `POST /database` → set `MYSQL_*` and **`WP_SALTS`** on the project env (`PUT /project/:id/env`).
+3. Deploy the app. WordPress data persists on the project volume; update core via **Dashboard → Updates** or `wp core update`.

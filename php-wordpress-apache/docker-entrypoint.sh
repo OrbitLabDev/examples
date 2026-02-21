@@ -4,21 +4,20 @@ DOCROOT="/var/www/html"
 WPCONTENT="${DOCROOT}/wp-content"
 PAAS_DATA="/app/data"
 
-# On OrbitLab PaaS, persistent volume is mounted at /app/data. Point uploads (and plugins/themes) there.
+# On OrbitLab PaaS, persistent volume at /app/data. Symlink the entire WordPress docroot there so
+# the app can write .htaccess, wp-config, and any core files; uploads/plugins/themes persist too.
+# Trade-off: redeploying a new image does not update WordPress core; use "wp core update" or Admin > Updates.
 if [ -d "$PAAS_DATA" ] && [ -w "$PAAS_DATA" ]; then
-  for dir in uploads plugins themes; do
-    mkdir -p "${PAAS_DATA}/${dir}"
-    # Copy default plugins/themes from image on first run (when persistent dir is empty)
-    if [ "$dir" != "uploads" ] && [ -d "${WPCONTENT}/${dir}" ] && [ -z "$(ls -A "${PAAS_DATA}/${dir}" 2>/dev/null)" ]; then
-      cp -an "${WPCONTENT}/${dir}/." "${PAAS_DATA}/${dir}/"
-    fi
-    if [ -e "${WPCONTENT}/${dir}" ] && [ ! -L "${WPCONTENT}/${dir}" ]; then
-      rm -rf "${WPCONTENT}/${dir}"
-    fi
-    if [ ! -L "${WPCONTENT}/${dir}" ]; then
-      ln -s "${PAAS_DATA}/${dir}" "${WPCONTENT}/${dir}"
-    fi
-  done
+  WP_VOLUME="${PAAS_DATA}/wordpress"
+  if [ ! -d "$WP_VOLUME" ] || [ -z "$(ls -A "$WP_VOLUME" 2>/dev/null)" ]; then
+    cp -a /var/www/html "$WP_VOLUME"
+  fi
+  if [ -e "$DOCROOT" ] && [ ! -L "$DOCROOT" ]; then
+    rm -rf "$DOCROOT"
+  fi
+  if [ ! -L "$DOCROOT" ]; then
+    ln -s "$WP_VOLUME" "$DOCROOT"
+  fi
   chown -R www-data:www-data "$PAAS_DATA"
 fi
 

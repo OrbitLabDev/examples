@@ -23,8 +23,10 @@ RUN curl -fsSL -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/bui
     && chmod +x /usr/local/bin/wp \
     && wp --info --allow-root
 
-# Enable Apache rewrite for WordPress permalinks
+# Enable Apache rewrite and .htaccess for WordPress permalinks
 RUN a2enmod rewrite
+COPY wordpress-allowoverride.conf /etc/apache2/conf-available/
+RUN a2enconf wordpress-allowoverride
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html
 WORKDIR /var/www/html
