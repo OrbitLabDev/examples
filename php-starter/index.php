@@ -1,3 +1,14 @@
+<?php
+/**
+ * Orbit Lab — PHP Starter
+ *
+ * Front controller. All requests that don't match a static file are routed here
+ * via .htaccess. Replace this with your own application logic.
+ */
+
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$method = $_SERVER['REQUEST_METHOD'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,11 +68,12 @@
         }
         .row:last-child { border-bottom: none; }
         .row .label { color: #a3a3a3; }
-        .row .value { color: #e5e5e5; font-family: monospace; }
+        .row .value { color: #e5e5e5; font-family: monospace; font-size: 0.85rem; }
         .hint {
             margin-top: 2rem;
             color: #737373;
             font-size: 0.85rem;
+            line-height: 1.6;
         }
         .hint code {
             background: rgba(255,255,255,0.1);
@@ -79,16 +91,20 @@
         <div class="info">
             <h2>Server Info</h2>
             <div class="row">
-                <span class="label">PHP Version</span>
+                <span class="label">PHP</span>
                 <span class="value"><?= phpversion() ?></span>
             </div>
             <div class="row">
-                <span class="label">Server</span>
+                <span class="label">Server API</span>
                 <span class="value"><?= php_sapi_name() ?></span>
             </div>
             <div class="row">
                 <span class="label">OS</span>
                 <span class="value"><?= PHP_OS ?></span>
+            </div>
+            <div class="row">
+                <span class="label">Request</span>
+                <span class="value"><?= htmlspecialchars($method . ' ' . $uri) ?></span>
             </div>
             <div class="row">
                 <span class="label">Time</span>
@@ -97,7 +113,9 @@
         </div>
 
         <p class="hint">
-            Edit <code>public/index.php</code> to start building your app.
+            Edit <code>index.php</code> to build your app.<br>
+            All requests route here via <code>.htaccess</code>.<br>
+            Upload files with SFTP from your dashboard.
         </p>
     </div>
 </body>

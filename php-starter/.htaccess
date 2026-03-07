@@ -1,0 +1,25 @@
+# Orbit Lab — PHP Starter .htaccess
+# OpenLiteSpeed supports Apache-style .htaccess when autoLoadHtaccess is enabled.
+
+# Enable rewrite engine
+RewriteEngine On
+
+# If the request is for an existing file or directory, serve it directly
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Otherwise route everything through index.php (front controller)
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Prevent directory listing
+Options -Indexes
+
+# Default charset
+AddDefaultCharset UTF-8
+
+# PHP settings (if supported by the OLS LSAPI handler)
+<IfModule lsapi_module>
+    php_value display_errors Off
+    php_value upload_max_filesize 64M
+    php_value post_max_size 64M
+</IfModule>

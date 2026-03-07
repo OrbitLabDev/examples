@@ -1,31 +1,22 @@
 # PHP Starter — Orbit Lab
 
-A minimal PHP application running on OpenLiteSpeed. Use this as a starting point for any PHP project on Orbit Lab shared hosting.
+A minimal PHP application for Orbit Lab shared hosting (OpenLiteSpeed).
 
 ## Structure
 
 ```
 php-starter/
-├── Dockerfile              # OpenLiteSpeed + PHP
-├── docker-entrypoint.sh    # Startup script
-├── public/                 # Document root
-│   ├── index.php           # Landing page
-│   └── info.php            # phpinfo() (remove in production)
-├── .env.example
+├── .htaccess    # OLS rewrite rules (front controller + directory listing off)
+├── index.php    # Entry point — all non-static requests route here
 └── README.md
 ```
 
-## Local development
+## How it works
 
-```bash
-docker build -t php-starter .
-docker run -p 8080:80 php-starter
-```
-
-Then open [http://localhost:8080](http://localhost:8080).
+On shared hosting, files are deployed directly onto the hosting's OpenLiteSpeed server. The `.htaccess` enables the rewrite engine and routes all requests to `index.php` (front controller pattern). Static files (images, CSS, JS) are served directly.
 
 ## Deploying on Orbit Lab
 
 1. Purchase a shared hosting plan on [orbitlab.dev](https://orbitlab.dev).
 2. From your hosting dashboard, click **Add website** and choose **PHP Starter**.
-3. Your app will be deployed automatically. Edit files via SFTP or push to the repo.
+3. Edit files via SFTP from the service dashboard.
